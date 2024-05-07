@@ -1,0 +1,14 @@
+services:
+  mysql57:
+    container_name: mysql57-test
+    build: ../mysql57
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS:?err}"
+    volumes:
+      - db-mysql57:/var/lib/mysql
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql"
+    ports:
+      - "${MYSQL57_PORT:-3306}:3306" # db engine
+volumes:
+  db-mysql57:
+    driver: local

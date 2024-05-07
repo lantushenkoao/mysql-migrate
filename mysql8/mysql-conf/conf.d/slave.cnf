@@ -1,0 +1,138 @@
+[mysqld]
+
+server-id = 2
+relay-log = /var/lib/mysql/mysql-relay-bin.log
+
+
+innodb_redo_log_capacity = 2G
+lower_case_table_names = 1
+######################################################################
+# NOTE: Two variables can be set in /lib/systemd/system/mysql.service
+# (https://dev.mysql.com/doc/refman/5.7/en/using-systemd.html)
+#
+#   max_open_files=1024
+#   table_open_cache=431
+#
+
+bind-address                    = 0.0.0.0
+
+#####################################################################
+#  The server ID, used in replication to give each master and slave a
+# unique identity. For each server participating in replication, you
+# should pick a positive integer in the range from 1 to 232 – 1 to
+# act as that server's ID.
+#
+#server-id                       = 32
+
+#####################################################################
+#  The maximum size of one packet or any generated/intermediate
+# string.
+# (see also 'innodb_log_file_size' below )
+#
+max_allowed_packet              = 999M
+
+#####################################################################
+#  If you are using big BLOB or TEXT rows, you must set the combined
+# size of log files at least 10 times bigger than the largest such
+# row.
+# [(max_allowed_packet * 10)/2]
+# If this value changed, stop mysql - remove files 'ib_logfile0' and
+# 'ib_logfile1' in /var/lib/mysql directory. Then start mysql.
+#
+innodb_log_file_size            = 1G
+
+#####################################################################
+#  Controls the balance between strict ACID compliance for commit
+# operations, and higher performance that is possible when
+# commit-related I/O operations are rearranged and done in batches.
+# You can achieve better performance by changing the default value,
+# but then you can lose up to a second of transactions in a crash.
+#
+#  The default value of 1 is required for full ACID compliance.
+# With this value, the contents of the InnoDB log buffer are written
+# out to the log file at each transaction commit and the log file is
+# flushed to disk.
+#
+innodb_flush_log_at_trx_commit  = 1
+
+#####################################################################
+#  If innodb_file_per_table is disabled (the default), InnoDB creates
+# tables in the shared tablespace. If innodb_file_per_table is
+# enabled, InnoDB creates each new table using its own .ibd file for
+# storing data and indexes, rather than in the shared tablespace.
+#
+innodb_file_per_table
+
+#####################################################################
+#  The directory used for temporary files and temporary tables. This
+#  variable can be set to a list of several paths that are used in
+#  round-robin fashion. Paths should be separated by colon characters
+#  (“:”) on Unix and semicolon characters (“;”) on Windows.
+#
+#  The multiple-directory feature can be used to spread the load
+#  between several physical disks. If the MySQL server is acting as a
+#  replication slave, you should not set tmpdir to point to a
+#  directory on a memory-based file system or to a directory that is
+#  cleared when the server host restarts. A replication slave needs
+#  some of its temporary files to survive a machine restart so that it
+#  can replicate temporary tables or LOAD DATA INFILE operations. If
+#  files in the temporary file directory are lost when the server
+#  restarts, replication fails. You can set the slave's temporary
+#  directory using the slave_load_tmpdir variable. In that case, the
+#  slave will not use the general tmpdir value and you can set tmpdir
+#  to a nonpermanent location.
+#
+tmpdir                          = /var/tmp
+
+#####################################################################
+# This variable controls verbosity of the server in writing error,
+# warning, and note messages to the error log.
+#
+# The following table shows the permitted values:
+#   1	Errors only
+#   2	Errors and warnings
+#   3	Errors, warnings, and notes
+#
+log_error_verbosity=2
+
+#####################################################################
+# This variable controls the timestamp time zone of error log
+# messages, and of general query log and slow query log messages
+# written to files. It does not affect the time zone of general query
+# log and slow query log messages written to tables
+# (mysql.general_log, mysql.slow_log). Rows retrieved from those
+# tables can be converted from the local system time zone to any
+# desired time zone with CONVERT_TZ() or by setting the session
+# time_zone system variable.
+#
+# Permitted log_timestamps values are UTC (the default) and SYSTEM
+# (local system time zone).
+#
+log_timestamps=SYSTEM
+
+#####################################################################
+# The MySQL server can operate in different SQL modes, and can apply
+# these modes differently for different clients, depending on the
+# value of the sql_mode system variable. DBAs can set the global SQL
+# mode to match site server operating requirements, and each
+# application can set its session SQL mode to its own requirements.
+sql_mode="STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
+
+#####################################################################
+# explicit_defaults_for_timestamp is itself deprecated because its
+# only purpose is to permit control over now-deprecated TIMESTAMP
+# behaviors that will be removed in a future MySQL release. When that
+# removal occurs, explicit_defaults_for_timestamp will have no
+# purpose and will be removed as well.
+#
+explicit_defaults_for_timestamp
+
+lower_case_table_names = 1
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+[mysqldump]
+
+max_allowed_packet              = 200M
+single-transaction
+quick
+

@@ -1,0 +1,13 @@
+services:
+  mysql8:
+    container_name: mysql8-test
+    build: ../mysql8
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS:?err}"
+    volumes:
+      - db-mysql8:/var/lib/mysql
+    ports:
+      - "${MYSQL8_PORT:-3307}:3306"
+volumes:
+  db-mysql8:
+    driver: local
